@@ -1,0 +1,94 @@
+﻿@model PostDetailViewModel
+@inject HtmlRenderer renderer
+@{ViewData["Title"] = "Post - " + Model.Post.Title; }
+
+<div class="hero-wrap js-fullheight" style="background-image: url(@Model.Post.Hero.File.Url);" data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="js-fullheight d-flex justify-content-center align-items-center">
+        <div class="col-md-8 text text-center">
+            <div class="desc">
+                <h1 class="mb-4">@Model.Post.Title</h1>
+                <p><a asp-controller="Home" asp-action="Index" class="btn-custom mr-2">Home <span class="ion-ios-arrow-forward"></span></a> <a href="index" class="btn-custom mr-2">Blog <span class="ion-ios-arrow-forward"></span></a> <a asp-controller="Post" asp-route-slug="@Model.Post.Slug" class="btn-custom">@Model.Post.Title <span class="ion-ios-arrow-forward"></span></a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 ftco-animate">
+                <h2 class="mb-3 font-weight-bold">@Model.Post.Title</h2>
+                @Html.Raw(await renderer.ToHtml(Model.Post.Content))
+                <div class="tag-widget post-tag-container mb-5 mt-5">
+                    <div class="tagcloud">
+                        @foreach (var tag in Model.Post.Tags)
+                        {
+                            <a href="#" class="tag-cloud-link">@tag.Name</a>
+                        }
+                    </div>
+                </div>
+
+                <div class="about-author d-flex p-4 bg-light">
+                    <div class="bio mr-5">
+                        <img src="@Model.Post.Author.Image.File.Url" alt="Image placeholder" class="img-fluid mb-4">
+                    </div>
+                    <div class="desc">
+                        <h3>@Model.Post.Author.AuthorName</h3>
+                        <p>@Model.Post.Author.Bio</p>
+                    </div>
+                </div>
+
+
+                <div class="pt-5 mt-5">
+                    <h3 class="mb-5 font-weight-bold">@(Model.Post.Comments?.Count ?? 0) Comments</h3>
+                    <ul class="comment-list">
+                        @foreach (var comment in Model.Post.Comments ?? Enumerable.Empty<Comment>())
+                        {
+                            <li class="comment">
+                                <div class="vcard bio">
+                                    <img src="@comment.Author.Image.File.Url" alt="Profile photo">
+                                </div>
+                                <div class="comment-body">
+                                    <h3>@comment.Author.AuthorName</h3>
+                                    <div class="meta">@comment.Sys.CreatedAt</div>
+                                    <p>@comment.Content</p>
+                                </div>
+                            </li>
+                        }
+
+                    </ul>
+                    <!-- END comment-list -->
+
+                    <div class="comment-form-wrap pt-5">
+                        <h3 class="mb-5">Leave a comment</h3>
+                        <form action="#" class="p-3 p-md-5 bg-light">
+                            <div class="form-group">
+                                <label for="name">Name *</label>
+                                <input type="text" class="form-control" id="name">
+                            </div>
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" class="form-control" id="email">
+                            </div>
+                            <div class="form-group">
+                                <label for="website">Website</label>
+                                <input type="url" class="form-control" id="website">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="message">Message</label>
+                                <textarea name="" id="message" cols="30" rows="10" class="form-control"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" value="Post Comment" class="btn py-3 px-4 btn-primary">
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+            </div> <!-- .col-md-8 -->
+            @await Component.InvokeAsync("Sidebar")
+        </div>
+    </div>
+</section>

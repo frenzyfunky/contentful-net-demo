@@ -1,0 +1,76 @@
+﻿@model CategoryViewModel
+@inject HtmlRenderer renderer
+@{ViewData["Title"] = "Category - " + Model.Category.Name; }
+
+<div class="hero-wrap js-fullheight" style="background-image: url(@Model.Category.Image.File.Url);" data-stellar-background-ratio="0.5">
+    <div class="overlay"></div>
+    <div class="js-fullheight d-flex justify-content-center align-items-center">
+        <div class="col-md-8 text text-center">
+            <div class="desc">
+                <h1 class="mb-4">@Model.Category.Name</h1>
+                <p><a asp-controller="Home" asp-action="Index" class="btn-custom mr-2">Home <span class="ion-ios-arrow-forward"></span></a> <a asp-controller="Category" asp-route-category="@Model.Category.Name" class="btn-custom">@Model.Category.Name <span class="ion-ios-arrow-forward"></span></a></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="row">
+                    @foreach (var post in Model.Posts)
+                    {
+                        var postUrl = Url.RouteUrl("post", new { slug = post.Slug });
+
+                        <div class="col-md-12">
+                            <div class="blog-entry ftco-animate">
+                                <a href="@postUrl" class="img" style="background-image: url(@post.Hero.File.Url);"></a>
+                                <div class="text pt-2 mt-3">
+                                    <span class="category mb-1 d-block"><a href="#">@Model.Category.Name</a></span>
+                                    <h3 class="mb-4"><a href="@postUrl">@post.Title</a></h3>
+                                    <p class="mb-4">@post.Headline</p>
+                                    <div class="author mb-4 d-flex align-items-center">
+                                        <a href="#" class="img" style="background-image: url(@post.Author.Image.File.Url);"></a>
+                                        <div class="ml-3 info">
+                                            <span>Written by</span>
+                                            <h3><a href="#">@post.Author.AuthorName</a>, <span>@post.Sys.CreatedAt</span></h3>
+                                        </div>
+                                    </div>
+                                    <div class="meta-wrap d-md-flex align-items-center">
+                                        <div class="half order-md-last text-md-right">
+                                            <p class="meta">
+                                                <span><i class="icon-heart"></i>@post.Like</span>
+                                                <span><i class="icon-eye"></i>100</span>
+                                                <span><i class="icon-comment"></i>@(post.Comments?.Count ?? 0)</span>
+                                            </p>
+                                        </div>
+                                        <div class="half">
+                                            <p><a href="@postUrl" class="btn btn-primary p-3 px-xl-4 py-xl-3">Continue Reading</a></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+                <div class="row mt-5">
+                    <div class="col">
+                        <div class="block-27">
+                            <ul>
+                                <li><a href="@(Model.HasPrevious ? Url.RouteUrl("category", new { category = Model.Category.Name, categoryId = Model.Category.Sys.Id, pageNumber = Model.CurrentPage - 1 }) : "javascript:void(0)") ">&lt;</a></li>
+                                @foreach (var pageNum in Enumerable.Range(1, Model.TotalPage))
+                                {
+                                    <li class="@(Model.CurrentPage == pageNum ? "active" : null)"><a href="@Url.RouteUrl("category", new { category = Model.Category.Name, categoryId = Model.Category.Sys.Id, pageNumber = pageNum })">@pageNum</a></li>
+                                }
+                                <li><a href="@(Model.HasNext ? Url.RouteUrl("category", new { category = Model.Category.Name, categoryId = Model.Category.Sys.Id, pageNumber = Model.CurrentPage + 1 }) : "javascript:void(0)") ">&gt;</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- END-->
+            @await Component.InvokeAsync("Sidebar")
+        </div>
+    </div>
+</section>
